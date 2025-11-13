@@ -1,0 +1,46 @@
+-- Criar Botões no MENU (exemplo para Auto Farm, Auto Farm Boss, Auto Pegar)
+
+local function autoFarmAcao()
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        for _,obj in ipairs(Workspace:GetDescendants()) do
+            if obj:IsA("Model") and obj:FindFirstChild("Humanoid") and obj:FindFirstChild("ManualMission") then
+                local root = obj.PrimaryPart or obj:FindFirstChild("HumanoidRootPart")
+                if root and (root.Position-char.HumanoidRootPart.Position).Magnitude<55 and IsAlive(obj) then
+                    obj.Humanoid.Health = 0
+                end
+            end
+        end
+        notify("NPCs próximos da missão eliminados!")
+    end
+end
+
+local function autoFarmBossAcao()
+    for _,boss in ipairs(getAllBosses()) do
+        if boss and boss:FindFirstChild("Humanoid") and IsAlive(boss) then
+            boss.Humanoid.Health = 0
+        end
+    end
+    notify("Bosses vivos eliminados!")
+end
+
+local function autoPegarAcao()
+    local char = LocalPlayer.Character
+    if char and char:FindFirstChild("HumanoidRootPart") then
+        for _, obj in ipairs(Workspace:GetDescendants()) do
+            if obj:IsA("BasePart") and obj.CanCollide and (obj.Position-char.HumanoidRootPart.Position).Magnitude<18 then
+                firetouchinterest(char.HumanoidRootPart, obj, 0)
+                wait()
+                firetouchinterest(char.HumanoidRootPart, obj, 1)
+            end
+        end
+        notify("Itens próximos foram coletados!")
+    end
+end
+
+-- Atualize os botões para executar a ação UMA SÓ VEZ ao clicar:
+local AutoFarmBtn = makeButton("Auto Farm", 8, Color3.fromRGB(60, 149, 210), ContentFrames[1], autoFarmAcao)
+local AutoFarmBossBtn = makeButton("Auto Farm Boss", 58, Color3.fromRGB(255,138,20), ContentFrames[1], autoFarmBossAcao)
+local AutoPegarBtn = makeButton("Auto Pegar", 158, Color3.fromRGB(102,190,245), ContentFrames[1], autoPegarAcao)
+
+-- Os outros botões de toggle (Aimbot, AutoClick, Esp) seguem o comportamento ON/OFF contínuo (pois dependem de manter efeito ou loop)
